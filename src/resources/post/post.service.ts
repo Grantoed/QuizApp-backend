@@ -1,7 +1,7 @@
-import { postModel } from './post.model';
-import { Post } from '@/resources/post/post.interface';
+import postModel from './post.model';
+import Post from '@/resources/post/post.interface';
 
-export class PostService {
+class PostService {
 	private post = postModel;
 
 	/**
@@ -16,3 +16,5 @@ export class PostService {
 		}
 	}
 }
+
+export default PostService;

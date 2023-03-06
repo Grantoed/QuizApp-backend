@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import Joi from 'joi';
 
-export function validationMiddleware(schema: Joi.Schema): RequestHandler {
+function validationMiddleware(schema: Joi.Schema): RequestHandler {
 	return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		const validationOptions = {
 			abortEarly: false,
@@ -22,3 +22,5 @@ export function validationMiddleware(schema: Joi.Schema): RequestHandler {
 		}
 	};
 }
+
+export default validationMiddleware;

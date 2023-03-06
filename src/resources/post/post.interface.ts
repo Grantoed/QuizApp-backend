@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface Post extends Document {
+export default interface Post extends Document {
 	title: string;
 	body: string;
 }
