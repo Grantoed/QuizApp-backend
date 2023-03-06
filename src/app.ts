@@ -3,11 +3,11 @@ import mongoose from 'mongoose';
 import compression from 'compression';
 import cors from 'cors';
 import morgan from 'morgan';
-import Controller from './utils/interfaces/controller.interface';
-import errorMiddleware from './middleware/error.middleware';
+import { Controller } from '@/utils/interfaces/controller.interface';
+import { errorMiddleware } from './middleware/error.middleware';
 import helmet from 'helmet';
 
-class App {
+export class App {
 	public express: Application;
 	public port: number;
 
@@ -53,5 +53,3 @@ class App {
 		});
 	}
 }
-
-export default App;

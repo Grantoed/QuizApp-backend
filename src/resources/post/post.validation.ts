@@ -1,8 +1,6 @@
 import Joi from 'joi';
 
-const create = Joi.object({
+export const createPost = Joi.object({
 	title: Joi.string().required(),
 	body: Joi.string().required(),
 });
-
-export default { create };
