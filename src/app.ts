@@ -23,6 +23,7 @@ class App {
     private initialiseDatabaseConnection(): void {
         const { MONGO_URL } = process.env;
 
+        mongoose.set('strictQuery', true);
         mongoose.connect(`${MONGO_URL}`);
     }
 
