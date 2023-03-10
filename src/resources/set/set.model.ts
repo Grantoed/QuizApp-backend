@@ -26,6 +26,10 @@ const setSchema = new Schema(
             ],
             required: true,
         },
+        owner: {
+            type: Schema.Types.ObjectId,
+            ref: 'user',
+        },
     },
     { timestamps: true },
 );

@@ -5,14 +5,14 @@ import Token from '@/utils/interfaces/token.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import jwt from 'jsonwebtoken';
 
-async function authenticatedMiddlware(
+async function authMiddleware(
     req: Request,
     res: Response,
     next: NextFunction,
 ): Promise<Response | void> {
     const bearer = req.headers.authorization;
     if (!bearer || !bearer.startsWith('Bearer ')) {
-        return next(new HttpException(401, 'Unauthorized'));
+        return next(new HttpException(401, 'Provide a valid token'));
     }
 
     const accessToken = bearer.split('Bearer ')[1].trim();
@@ -20,11 +20,11 @@ async function authenticatedMiddlware(
     try {
         const payload: Token | jwt.JsonWebTokenError = await verifyToken(accessToken);
         if (payload instanceof jwt.JsonWebTokenError) {
-            return next(new HttpException(401, 'Unauthorized'));
+            return next(new HttpException(401, 'Invalid token'));
         }
         const user = await userModel.findById(payload.id).select('-password').exec();
         if (!user) {
-            return next(new HttpException(401, 'Unauthorized'));
+            return next(new HttpException(404, `User doesn't exist`));
         }
 
         req.user = user;
@@ -34,4 +34,4 @@ async function authenticatedMiddlware(
     }
 }
 
-export default authenticatedMiddlware;
+export default authMiddleware;
