@@ -24,6 +24,8 @@ class SetController implements Controller {
             [authMiddleware, validationMiddleware(validate.createSet)],
             this.create,
         );
+        this.router.put(`${this.path}/:id`, authMiddleware, this.updateSet);
+        this.router.put(`${this.path}/cards/:id`, authMiddleware, this.updateCard);
         this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
     }
 
@@ -87,6 +89,42 @@ class SetController implements Controller {
             const { _id: userId } = req.user;
             const set = await this.SetService.create(title, description, cards, userId);
             res.status(201).json({ set });
+        } catch (e: any) {
+            next(new HttpException(e.status, e.message));
+        }
+    };
+
+    private updateSet = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<Response | void> => {
+        try {
+            const { id: setId } = req.params;
+            const { title, description } = req.body;
+            const { _id: userId } = req.user;
+
+            await this.SetService.updateSet(setId, { title, description }, userId);
+            res.status(200).send('Set updated');
+        } catch (e: any) {
+            next(new HttpException(e.status, e.message));
+        }
+    };
+
+    private updateCard = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<Response | void> => {
+        try {
+            const { id: cardId } = req.params;
+            const { term, definition } = req.body;
+            const { _id: userId } = req.user;
+            // console.log('controller triggered');
+            console.log('id', cardId);
+
+            await this.SetService.updateCard(cardId, { term, definition }, userId);
+            res.status(200).send('Card updated');
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

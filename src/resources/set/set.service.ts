@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Types } from 'mongoose';
 import HttpException from '@/utils/exceptions/http.exception';
 import setModel from './set.model';
 import Set from './set.interface';
@@ -15,7 +15,7 @@ class SetService {
         }
     }
 
-    public async getCountByUser(userId: Schema.Types.ObjectId): Promise<number> {
+    public async getCountByUser(userId: Types.ObjectId): Promise<number> {
         try {
             const count = await this.set.countDocuments({ owner: userId });
             return count;
@@ -50,7 +50,7 @@ class SetService {
     public async getByUser(
         page: number,
         limit: number,
-        userId: Schema.Types.ObjectId,
+        userId: Types.ObjectId,
     ): Promise<Set[] | []> {
         try {
             const sets = await this.set
@@ -65,8 +65,8 @@ class SetService {
 
     public async getById(setId: string): Promise<Set> {
         try {
-            const id = new Schema.Types.ObjectId(setId);
-            const set = await this.set.findOne({ _id: id });
+            const setObjectId = new Types.ObjectId(setId);
+            const set = await this.set.findOne({ _id: setObjectId });
             if (!set) {
                 throw new Error(`Set with id ${setId} doesn't exist`);
             }
@@ -80,7 +80,7 @@ class SetService {
         title: string,
         description: string,
         cards: Set['cards'],
-        userId: Schema.Types.ObjectId,
+        userId: Types.ObjectId,
     ): Promise<Set> {
         try {
             const newSet = await this.set.create({ title, description, cards, owner: userId });
@@ -90,10 +90,10 @@ class SetService {
         }
     }
 
-    public async delete(setId: string, userId: Schema.Types.ObjectId): Promise<Set> {
+    public async delete(setId: string, userId: Types.ObjectId): Promise<Set> {
         try {
-            const id = new Schema.Types.ObjectId(setId);
-            const set = await this.set.findOneAndDelete({ _id: id, userId });
+            const setObjectId = new Types.ObjectId(setId);
+            const set = await this.set.findOneAndDelete({ _id: setObjectId, userId });
             if (!set) {
                 throw new HttpException(404, `Set with id ${setId} doesn't exist`);
             }
@@ -112,12 +112,12 @@ class SetService {
             title?: string;
             description?: string;
         },
-        userId: Schema.Types.ObjectId,
+        userId: Types.ObjectId,
     ): Promise<Response | void> {
         try {
-            const id = new Schema.Types.ObjectId(setId);
+            const setObjectId = new Types.ObjectId(setId);
             const updatedSet = await this.set.findOneAndUpdate(
-                { _id: id, owner: userId },
+                { _id: setObjectId, owner: userId },
                 {
                     $set: {
                         title: title,
@@ -125,6 +125,43 @@ class SetService {
                     },
                 },
                 { new: true },
+            );
+            if (!updatedSet) {
+                throw new HttpException(404, `Set not found`);
+            }
+        } catch (e: any) {
+            throw new HttpException(500, `Unable to update set`);
+        }
+    }
+
+    public async updateCard(
+        cardId: string,
+        {
+            term,
+            definition,
+        }: {
+            term?: string;
+            definition?: string;
+        },
+        userId: Types.ObjectId,
+    ): Promise<Response | void> {
+        try {
+            const cardObjectId = new Types.ObjectId(cardId);
+            let updateObject: any = {};
+            if (term !== undefined && definition !== undefined) {
+                updateObject['cards.$[card].term'] = term;
+                updateObject['cards.$[card].definition'] = definition;
+            }
+            const updatedSet = await this.set.findOneAndUpdate(
+                {
+                    _id: cardObjectId,
+                    owner: userId,
+                    'cards._id': cardObjectId,
+                },
+                {
+                    $set: updateObject,
+                },
+                { new: true, arrayFilters: [{ 'card._id': cardObjectId }] },
             );
             if (!updatedSet) {
                 throw new HttpException(404, `Set not found`);
