@@ -36,7 +36,7 @@ class UserController implements Controller {
 
             res.status(201).json({ token });
         } catch (e: any) {
-            next(new HttpException(400, e.message));
+            next(new HttpException(e.status, e.message));
         }
     };
 
@@ -50,16 +50,19 @@ class UserController implements Controller {
             const token = await this.UserService.login(email, password);
             res.status(200).json({ token });
         } catch (e: any) {
-            next(new HttpException(400, e.message));
+            next(new HttpException(e.status, e.message));
         }
     };
 
     private getUser = (req: Request, res: Response, next: NextFunction): Response | void => {
-        if (!req.user) {
-            return next(new HttpException(404, 'No logged in user'));
+        try {
+            if (!req.user) {
+                return next(new HttpException(401, 'You must login first'));
+            }
+            res.status(200).json({ user: req.user });
+        } catch (e: any) {
+            next(new HttpException(e.status, e.message));
         }
-
-        res.status(200).json({ user: req.user });
     };
 }
 

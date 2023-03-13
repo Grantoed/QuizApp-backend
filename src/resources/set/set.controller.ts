@@ -27,6 +27,7 @@ class SetController implements Controller {
         this.router.put(`${this.path}/:id`, authMiddleware, this.updateSet);
         this.router.put(`${this.path}/cards/:id`, authMiddleware, this.updateCard);
         this.router.delete(`${this.path}/:id`, authMiddleware, this.delete);
+        this.router.delete(`${this.path}/cards/:id`, authMiddleware, this.deleteCard);
     }
 
     private getAll = async (
@@ -120,11 +121,13 @@ class SetController implements Controller {
             const { id: cardId } = req.params;
             const { term, definition } = req.body;
             const { _id: userId } = req.user;
-            // console.log('controller triggered');
-            console.log('id', cardId);
 
-            await this.SetService.updateCard(cardId, { term, definition }, userId);
-            res.status(200).send('Card updated');
+            const updatedCard = await this.SetService.updateCard(
+                cardId,
+                { term, definition },
+                userId,
+            );
+            res.status(200).json(updatedCard);
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -139,7 +142,23 @@ class SetController implements Controller {
             const { id: setId } = req.params;
             const { _id: userId } = req.user;
             await this.SetService.delete(setId, userId);
-            res.status(204);
+            res.status(200).send(`Set with id: ${setId} deleted`);
+        } catch (e: any) {
+            next(new HttpException(e.status, e.message));
+        }
+    };
+
+    private deleteCard = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<Response | void> => {
+        try {
+            const { id: cardId } = req.params;
+            const { _id: userId } = req.user;
+
+            const deletedCard = await this.SetService.deleteCard(cardId, userId);
+            res.status(200).json(deletedCard);
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

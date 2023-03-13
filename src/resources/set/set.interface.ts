@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-interface Cards {
+export interface Card extends Document {
     term: string;
     definition: string;
 }
@@ -8,5 +8,5 @@ interface Cards {
 export default interface Set extends Document {
     title: string;
     description: string;
-    cards: Cards[];
+    cards: Card[];
 }
