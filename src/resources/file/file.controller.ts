@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { uploadFile } from '../../aws/s3';
 import Controller from '@/utils/interfaces/controller.interface';
 import HttpException from '@/utils/exceptions/http.exception';
-import fileMiddleware from '@/middleware/file.middleware';
+import uploadMiddleware from '@/middleware/file.middleware';
 import authMiddleware from '@/middleware/authenticated.middleware';
 import validationMiddleware from '@/middleware/validation.middleware';
 
@@ -19,7 +19,7 @@ class FilesController implements Controller {
             // `${this.path}/user/upload/:id`,
             `${this.path}/user/upload`,
             // [authMiddleware, filesMiddleware.single('avatar')],
-            fileMiddleware.single('avatar'),
+            uploadMiddleware,
             this.uploadAvatar,
         );
     }
@@ -31,6 +31,8 @@ class FilesController implements Controller {
     ): Promise<Response | void> => {
         try {
             const file = req.file;
+            // console.log(file);
+
             // const { _id: userId } = req.user;
             if (!file) {
                 return next(new HttpException(400, 'No file provided'));
@@ -39,7 +41,8 @@ class FilesController implements Controller {
             console.log(result);
             // const avatarURL = await updateAvatar(file, userId);
             // res.status(200).json({ avatarURL });
-            res.status(200);
+            res.status(200).send(`Uploaded`);
+            next();
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

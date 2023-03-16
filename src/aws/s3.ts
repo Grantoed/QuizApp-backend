@@ -13,6 +13,8 @@ const s3 = new S3({
 });
 
 export function uploadFile(file: Express.Multer.File) {
+    console.log(file);
+
     const fileStream = fs.createReadStream(file.path);
 
     const uploadParams = {
