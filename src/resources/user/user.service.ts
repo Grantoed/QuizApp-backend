@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+import User from './user.interface';
 import userModel from './user.model';
 import token from '@/utils/token';
 import HttpException from '@/utils/exceptions/http.exception';
@@ -37,6 +39,18 @@ class UserService {
         } else {
             throw new HttpException(401, 'Wrong email or password');
         }
+    }
+
+    /**
+     * Return current user info
+     */
+    public async current(userId: string): Promise<User> {
+        const userObjectId = new Types.ObjectId(userId);
+        const user = await this.user.findOne({ _id: userObjectId });
+        if (!user) {
+            throw new HttpException(404, `No user with email ${userObjectId} was found`);
+        }
+        return user;
     }
 }
 
