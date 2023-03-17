@@ -24,9 +24,6 @@ const resizeAndRenameImage = async (
     await fs.unlink(`${AVATARS_DIR}/${fileName}`);
 
     const newFilePath = path.join(AVATARS_DIR, newFileName);
-
-    console.log('newFilePath', newFilePath);
-
     return { newFileName, newFilePath };
 };
 

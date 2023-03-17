@@ -1,5 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import fs from 'fs/promises';
 import { uploadFile } from '../../aws/s3';
+import FileService from './file.service';
 import Controller from '@/utils/interfaces/controller.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import uploadMiddleware from '@/middleware/file.middleware';
@@ -9,6 +11,7 @@ import validationMiddleware from '@/middleware/validation.middleware';
 class FilesController implements Controller {
     public path = '/files';
     public router = Router();
+    public FileService = new FileService();
 
     constructor() {
         this.initialiseRoutes();
@@ -16,10 +19,8 @@ class FilesController implements Controller {
 
     private initialiseRoutes(): void {
         this.router.post(
-            // `${this.path}/user/upload/:id`,
-            `${this.path}/user/upload`,
-            // [authMiddleware, filesMiddleware.single('avatar')],
-            uploadMiddleware,
+            `${this.path}/user/upload/:id`,
+            [authMiddleware, uploadMiddleware],
             this.uploadAvatar,
         );
     }
@@ -31,17 +32,15 @@ class FilesController implements Controller {
     ): Promise<Response | void> => {
         try {
             const file = req.file;
-            // console.log(file);
-
-            // const { _id: userId } = req.user;
+            const { _id: userId } = req.user;
             if (!file) {
                 return next(new HttpException(400, 'No file provided'));
             }
             const result = await uploadFile(file);
+            await fs.unlink(file.path);
             console.log(result);
-            // const avatarURL = await updateAvatar(file, userId);
-            // res.status(200).json({ avatarURL });
-            res.status(200).send(`Uploaded`);
+            const avatarURL = await this.FileService.updateAvatar(result.Location, userId);
+            res.status(200).json({ avatarURL });
             next();
         } catch (e: any) {
             next(new HttpException(e.status, e.message));

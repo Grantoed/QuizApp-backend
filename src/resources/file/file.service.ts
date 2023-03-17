@@ -1,10 +1,17 @@
-// import path from 'path';
-// import UserService from '../user/user.service';
+import { Types } from 'mongoose';
+import UserService from '../user/user.service';
 
-// class FileService {
-//     private UserService = new UserService();
+class FileService {
+    private UserService = new UserService();
 
-//     public async updateAvatar(file: Express.Multer.File, userId): Promise {
-//         const user = await this.UserService.current(userId);
-//     }
-// }
+    public async updateAvatar(avatarURL: string, userId: Types.ObjectId): Promise<string | void> {
+        const user = await this.UserService.current(userId);
+        user.avatarURL = avatarURL;
+
+        user.save();
+
+        return user.avatarURL;
+    }
+}
+
+export default FileService;
