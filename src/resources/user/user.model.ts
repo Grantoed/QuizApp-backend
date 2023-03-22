@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 import User from './user.interface';
+import { array } from 'joi';
 
 const userSchema = new Schema(
     {
@@ -19,6 +20,7 @@ const userSchema = new Schema(
         password: {
             type: String,
         },
+
         role: {
             type: String,
             required: true,
@@ -26,6 +28,18 @@ const userSchema = new Schema(
 
         avatarURL: {
             type: String,
+        },
+
+        quizQuestions: {
+            type: Array,
+        },
+
+        incorrectAnswers: {
+            type: Array,
+        },
+
+        solvedQuizes: {
+            type: Array,
         },
     },
     { timestamps: true },

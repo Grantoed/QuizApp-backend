@@ -51,7 +51,7 @@ class SetService {
         const setObjectId = new Types.ObjectId(setId);
         const set = await this.set.findOne({ _id: setObjectId });
         if (!set) {
-            throw new Error(`Set with id ${setId} doesn't exist`);
+            throw new HttpException(404, `Set with id ${setId} doesn't exist`);
         }
         return set;
     }
