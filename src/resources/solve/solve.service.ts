@@ -89,6 +89,7 @@ class SolveService {
                 const selectedOptionIndex = question.options.indexOf(selectedOption);
                 const correctOptionIndex = question.correctIndex;
                 isCorrectAnswer = selectedOptionIndex === correctOptionIndex;
+
                 if (!isCorrectAnswer) {
                     incorrectAnswer = {
                         term: question.term,

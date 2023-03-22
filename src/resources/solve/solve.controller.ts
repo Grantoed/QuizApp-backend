@@ -42,7 +42,11 @@ class SolveController implements Controller {
         try {
             const { _id: userId } = req.user;
             const { term, selectedOption } = req.body;
-            const isCorrectAnswer = this.SolveService.checkCardAnswer(term, selectedOption, userId);
+            const isCorrectAnswer = await this.SolveService.checkCardAnswer(
+                term,
+                selectedOption,
+                userId,
+            );
             res.status(200).json({ isCorrectAnswer });
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
