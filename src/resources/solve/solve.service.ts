@@ -118,7 +118,7 @@ class SolveService {
         user.solvedQuizes = [...user.solvedQuizes, setId];
         user.quizQuestions = [];
         user.incorrectAnswers = [];
-        user.save();
+        await user.save();
         return incorrectAnswers;
     }
 }

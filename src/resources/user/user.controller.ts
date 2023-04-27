@@ -22,6 +22,7 @@ class UserController implements Controller {
             this.register,
         );
         this.router.post(`${this.path}/login`, validationMiddleware(validate.login), this.login);
+        this.router.post(`${this.path}/logout`, this.logout);
         this.router.get(`${this.path}`, authMiddleware, this.getUser);
     }
 
@@ -32,9 +33,9 @@ class UserController implements Controller {
     ): Promise<Response | void> => {
         try {
             const { name, email, password } = req.body;
-            const token = await this.UserService.register(name, email, password, 'user');
+            const user = await this.UserService.register(name, email, password, 'user');
 
-            res.status(201).json({ token });
+            res.status(201).json({ user });
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -47,8 +48,22 @@ class UserController implements Controller {
     ): Promise<Response | void> => {
         try {
             const { email, password } = req.body;
-            const token = await this.UserService.login(email, password);
-            res.status(200).json({ token });
+            const user = await this.UserService.login(email, password);
+            res.status(200).json({ user });
+        } catch (e: any) {
+            next(new HttpException(e.status, e.message));
+        }
+    };
+
+    private logout = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ): Promise<Response | void> => {
+        try {
+            const { _id: userId } = req.user;
+            await this.UserService.logout(userId);
+            res.status(200).send('Logged out successfully');
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

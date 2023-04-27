@@ -8,7 +8,7 @@ class FileService {
         const user = await this.UserService.current(userId);
         user.avatarURL = avatarURL;
 
-        user.save();
+        await user.save();
 
         return user.avatarURL;
     }

@@ -9,6 +9,8 @@ export default interface User extends Document {
     quizQuestions: QuizQuestion[] | [];
     incorrectAnswers: IncorrectAnswer[] | [];
     solvedQuizes: string[];
+    accessToken: string;
+    refreshToken: string;
 
     isValidPassword(password: string): Promise<Error | boolean>;
 }

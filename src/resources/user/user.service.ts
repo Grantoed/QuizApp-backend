@@ -16,7 +16,7 @@ class UserService {
         email: string,
         password: string,
         role: string,
-    ): Promise<string | Error> {
+    ): Promise<User | Error> {
         const avatarURL = gravatar.url(email);
         const existingUser = await this.user.findOne({ email });
         if (existingUser) {
@@ -24,22 +24,45 @@ class UserService {
         }
         const user = await this.user.create({ name, email, password, role, avatarURL });
         const accessToken = token.createToken(user);
-        return accessToken;
+        const refreshToken = token.createRefreshToken(user);
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
+        await user.save();
+        return user;
     }
 
     /**
      * Attempt to login a user
      */
-    public async login(email: string, password: string): Promise<string | Error> {
+    public async login(email: string, password: string): Promise<User | Error> {
         const user = await this.user.findOne({ email });
         if (!user) {
             throw new HttpException(401, 'Unable to find user with that email address');
         }
 
         if (await user.isValidPassword(password)) {
-            return token.createToken(user);
+            const accessToken = token.createToken(user);
+            const refreshToken = token.createRefreshToken(user);
+            user.accessToken = accessToken;
+            user.refreshToken = refreshToken;
+            await user.save();
+            return user;
         } else {
             throw new HttpException(401, 'Wrong email or password');
+        }
+    }
+
+    /**
+     * Log out current user
+     */
+
+    public async logout(userId: Types.ObjectId): Promise<Error | void> {
+        const user = await this.user.findOneAndUpdate(
+            { userId },
+            { accessToken: '', refreshToken: '' },
+        );
+        if (!user) {
+            throw new HttpException(401, 'Unable to find user');
         }
     }
 
