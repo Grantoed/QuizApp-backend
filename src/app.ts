@@ -1,4 +1,7 @@
+import './auth/oauth';
 import express, { Application } from 'express';
+import session from 'express-session';
+import passport from 'passport';
 import mongoose from 'mongoose';
 import compression from 'compression';
 import cors from 'cors';
@@ -34,6 +37,15 @@ class App {
         this.express.use(express.json());
         this.express.use(express.urlencoded({ extended: false }));
         this.express.use(compression());
+        this.express.use(passport.initialize());
+        this.express.use(passport.session());
+        this.express.use(
+            session({
+                secret: process.env.SESSION_SECRET!,
+                resave: false,
+                saveUninitialized: true,
+            }),
+        );
     }
 
     private initialiseControllers(controllers: Controller[]): void {

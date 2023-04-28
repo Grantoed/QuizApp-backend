@@ -4,6 +4,11 @@ import User from './user.interface';
 
 const userSchema = new Schema(
     {
+        googleId: {
+            type: String,
+            required: false,
+        },
+
         name: {
             type: String,
             required: true,
@@ -22,7 +27,7 @@ const userSchema = new Schema(
 
         role: {
             type: String,
-            required: true,
+            default: 'user',
         },
 
         avatarURL: {

@@ -13,6 +13,9 @@ function validateEnv(): void {
         AWS_BUCKET_REGION: str(),
         AWS_ACCESS_KEY: str(),
         AWS_SECRET_KEY: str(),
+        GOOGLE_CLIENT_ID: str(),
+        GOOGLE_CLIENT_SECRET: str(),
+        SESSION_SECRET: str(),
     });
 }
 

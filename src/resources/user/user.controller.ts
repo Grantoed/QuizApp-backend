@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import passport from 'passport';
 import Controller from '@/utils/interfaces/controller.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import validationMiddleware from '@/middleware/validation.middleware';
@@ -24,6 +25,17 @@ class UserController implements Controller {
         this.router.post(`${this.path}/login`, validationMiddleware(validate.login), this.login);
         this.router.post(`${this.path}/logout`, this.logout);
         this.router.get(`${this.path}`, authMiddleware, this.getUser);
+        this.router.get(
+            `${this.path}/google`,
+            passport.authenticate('google', { scope: ['profile', 'email'] }),
+        );
+        this.router.get(
+            `${this.path}/callback`,
+            passport.authenticate('google', { failureRedirect: '/' }),
+            (req, res) => {
+                res.redirect('/');
+            },
+        );
     }
 
     private register = async (
