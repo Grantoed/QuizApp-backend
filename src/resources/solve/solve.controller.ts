@@ -25,10 +25,12 @@ class SolveController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { id: setId } = req.params;
-            const { _id: userId } = req.user;
-            const quizQuestions = await this.SolveService.startSet(setId, userId);
-            res.status(200).json({ quizQuestions });
+            if (req.user) {
+                const { id: setId } = req.params;
+                const { _id: userId } = req.user;
+                const quizQuestions = await this.SolveService.startSet(setId, userId);
+                res.status(200).json({ quizQuestions });
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -40,14 +42,16 @@ class SolveController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { _id: userId } = req.user;
-            const { term, selectedOption } = req.body;
-            const isCorrectAnswer = await this.SolveService.checkCardAnswer(
-                term,
-                selectedOption,
-                userId,
-            );
-            res.status(200).json({ isCorrectAnswer });
+            if (req.user) {
+                const { _id: userId } = req.user;
+                const { term, selectedOption } = req.body;
+                const isCorrectAnswer = await this.SolveService.checkCardAnswer(
+                    term,
+                    selectedOption,
+                    userId,
+                );
+                res.status(200).json({ isCorrectAnswer });
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -59,10 +63,12 @@ class SolveController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { id: setId } = req.params;
-            const { _id: userId } = req.user;
-            const incorrectAnswers = await this.SolveService.submitSet(setId, userId);
-            res.status(200).json({ incorrectAnswers });
+            if (req.user) {
+                const { id: setId } = req.params;
+                const { _id: userId } = req.user;
+                const incorrectAnswers = await this.SolveService.submitSet(setId, userId);
+                res.status(200).json({ incorrectAnswers });
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

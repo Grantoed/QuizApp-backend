@@ -73,9 +73,11 @@ class UserController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { _id: userId } = req.user;
-            await this.UserService.logout(userId);
-            res.status(200).send('Logged out successfully');
+            if (req.user) {
+                const { _id: userId } = req.user;
+                await this.UserService.logout(userId);
+                res.status(200).send('Logged out successfully');
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

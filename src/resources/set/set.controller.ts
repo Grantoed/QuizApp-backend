@@ -54,13 +54,15 @@ class SetController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { _id: userId } = req.user;
-            const page = parseInt(req.query.page as string) || 1;
-            const limit = parseInt(req.query.limit as string) || 10;
-            const sets = await this.SetService.getByUser(page, limit, userId);
-            const count = await this.SetService.getCountByUser(userId);
-            const totalPages = Math.ceil(count / limit);
-            res.status(200).json({ sets, page, limit, count, totalPages });
+            if (req.user) {
+                const { _id: userId } = req.user;
+                const page = parseInt(req.query.page as string) || 1;
+                const limit = parseInt(req.query.limit as string) || 10;
+                const sets = await this.SetService.getByUser(page, limit, userId);
+                const count = await this.SetService.getCountByUser(userId);
+                const totalPages = Math.ceil(count / limit);
+                res.status(200).json({ sets, page, limit, count, totalPages });
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -86,10 +88,12 @@ class SetController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { title, description, cards } = req.body;
-            const { _id: userId } = req.user;
-            const set = await this.SetService.create(title, description, cards, userId);
-            res.status(201).json({ set });
+            if (req.user) {
+                const { title, description, cards } = req.body;
+                const { _id: userId } = req.user;
+                const set = await this.SetService.create(title, description, cards, userId);
+                res.status(201).json({ set });
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -101,12 +105,14 @@ class SetController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { id: setId } = req.params;
-            const { title, description } = req.body;
-            const { _id: userId } = req.user;
+            if (req.user) {
+                const { id: setId } = req.params;
+                const { title, description } = req.body;
+                const { _id: userId } = req.user;
 
-            await this.SetService.updateSet(setId, { title, description }, userId);
-            res.status(200).send('Set updated');
+                await this.SetService.updateSet(setId, { title, description }, userId);
+                res.status(200).send('Set updated');
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -118,16 +124,18 @@ class SetController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { id: cardId } = req.params;
-            const { term, definition } = req.body;
-            const { _id: userId } = req.user;
+            if (req.user) {
+                const { id: cardId } = req.params;
+                const { term, definition } = req.body;
+                const { _id: userId } = req.user;
 
-            const updatedCard = await this.SetService.updateCard(
-                cardId,
-                { term, definition },
-                userId,
-            );
-            res.status(200).json(updatedCard);
+                const updatedCard = await this.SetService.updateCard(
+                    cardId,
+                    { term, definition },
+                    userId,
+                );
+                res.status(200).json(updatedCard);
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -139,10 +147,12 @@ class SetController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { id: setId } = req.params;
-            const { _id: userId } = req.user;
-            await this.SetService.delete(setId, userId);
-            res.status(200).send(`Set with id: ${setId} deleted`);
+            if (req.user) {
+                const { id: setId } = req.params;
+                const { _id: userId } = req.user;
+                await this.SetService.delete(setId, userId);
+                res.status(200).send(`Set with id: ${setId} deleted`);
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
@@ -154,11 +164,13 @@ class SetController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const { id: cardId } = req.params;
-            const { _id: userId } = req.user;
+            if (req.user) {
+                const { id: cardId } = req.params;
+                const { _id: userId } = req.user;
 
-            const deletedCard = await this.SetService.deleteCard(cardId, userId);
-            res.status(200).json(deletedCard);
+                const deletedCard = await this.SetService.deleteCard(cardId, userId);
+                res.status(200).json(deletedCard);
+            }
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }

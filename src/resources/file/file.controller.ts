@@ -31,17 +31,19 @@ class FilesController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            const file = req.file;
-            const { _id: userId } = req.user;
-            if (!file) {
-                return next(new HttpException(400, 'No file provided'));
+            if (req.user) {
+                const file = req.file;
+                const { _id: userId } = req.user;
+                if (!file) {
+                    return next(new HttpException(400, 'No file provided'));
+                }
+                const result = await uploadFile(file);
+                await fs.unlink(file.path);
+                console.log(result);
+                const avatarURL = await this.FileService.updateAvatar(result.Location, userId);
+                res.status(200).json({ avatarURL });
+                next();
             }
-            const result = await uploadFile(file);
-            await fs.unlink(file.path);
-            console.log(result);
-            const avatarURL = await this.FileService.updateAvatar(result.Location, userId);
-            res.status(200).json({ avatarURL });
-            next();
         } catch (e: any) {
             next(new HttpException(e.status, e.message));
         }
