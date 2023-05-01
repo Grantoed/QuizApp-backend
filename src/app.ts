@@ -37,15 +37,15 @@ class App {
         this.express.use(express.json());
         this.express.use(express.urlencoded({ extended: false }));
         this.express.use(compression());
-        this.express.use(passport.initialize());
-        this.express.use(passport.session());
         this.express.use(
             session({
                 secret: process.env.SESSION_SECRET!,
-                resave: false,
+                resave: true,
                 saveUninitialized: true,
             }),
         );
+        this.express.use(passport.initialize());
+        this.express.use(passport.session());
     }
 
     private initialiseControllers(controllers: Controller[]): void {
