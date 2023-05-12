@@ -2,6 +2,7 @@ import { Document } from 'mongoose';
 import { QuizQuestion, IncorrectAnswer } from '../solve/solve.interface';
 
 export default interface User extends Document {
+    googleId: string;
     email: string;
     name: string;
     password: string;

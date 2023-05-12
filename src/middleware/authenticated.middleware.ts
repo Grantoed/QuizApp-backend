@@ -10,14 +10,20 @@ async function authMiddleware(
     res: Response,
     next: NextFunction,
 ): Promise<Response | void> {
-    const bearer = req.headers.authorization;
-    if (!bearer || !bearer.startsWith('Bearer ')) {
-        return next(new HttpException(401, 'Provide a valid token'));
-    }
-
-    const accessToken = bearer.split('Bearer ')[1].trim();
-
     try {
+        const bearer = req.headers.authorization;
+
+        if (req.session.passport?.user || !bearer) {
+            console.log('req.user', req.user);
+            return next();
+        }
+
+        if (!bearer || !bearer.startsWith('Bearer ')) {
+            return next(new HttpException(401, 'Provide a valid token'));
+        }
+
+        const accessToken = bearer.split('Bearer ')[1].trim();
+
         const payload: Token | jwt.JsonWebTokenError = await verifyToken(accessToken);
         if (payload instanceof jwt.JsonWebTokenError) {
             return next(new HttpException(401, 'Invalid token'));

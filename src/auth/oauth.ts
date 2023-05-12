@@ -1,5 +1,6 @@
 import passport from 'passport';
 import { Types } from 'mongoose';
+import User from '@/resources/user/user.interface';
 import { OAuth2Strategy as GoogleStrategy, VerifyFunction } from 'passport-google-oauth';
 import HttpException from '@/utils/exceptions/http.exception';
 import userModel from '@/resources/user/user.model';
@@ -11,7 +12,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            callbackURL: 'http://localhost:3000/api/users/google/callback',
+            callbackURL: 'http://localhost:8080/api/users/google/callback',
         },
         async (accessToken, refreshToken, profile, done: VerifyFunction) => {
             try {
@@ -40,13 +41,12 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-    done(null, user);
+    done(null, user._id);
 });
 
-passport.deserializeUser(async (id: string, done) => {
+passport.deserializeUser(async (_id: User, done) => {
     try {
-        const userObjectId = new Types.ObjectId(id);
-        const serializedUser = await user.findOne({ _id: userObjectId });
+        const serializedUser = await user.findById(_id);
         if (!serializedUser) {
             throw new HttpException(404, `User not found`);
         }

@@ -1,6 +1,7 @@
 import './auth/oauth';
 import express, { Application } from 'express';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import mongoose from 'mongoose';
 import compression from 'compression';
@@ -33,15 +34,22 @@ class App {
     private initialiseMiddleware(): void {
         this.express.use(helmet());
         this.express.use(cors());
+        this.express.use(
+            cors({
+                origin: 'http://localhost:3000',
+                credentials: true,
+            }),
+        );
         this.express.use(morgan('dev'));
         this.express.use(express.json());
         this.express.use(express.urlencoded({ extended: false }));
         this.express.use(compression());
+        this.express.use(cookieParser());
         this.express.use(
             session({
                 secret: process.env.SESSION_SECRET!,
-                resave: true,
-                saveUninitialized: true,
+                resave: false,
+                saveUninitialized: false,
             }),
         );
         this.express.use(passport.initialize());

@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import User from '@/resources/user/user.interface';
+import session from 'express-session';
 
 declare global {
     namespace Express {
@@ -9,6 +10,12 @@ declare global {
         interface User {
             _id: Types.ObjectId;
         }
+    }
+}
+
+declare module 'express-session' {
+    export interface SessionData {
+        passport: any;
     }
 }
 

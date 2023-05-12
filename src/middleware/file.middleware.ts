@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import multer, { StorageEngine } from 'multer';
-import resizeAndRenameImage from '../helpers/file.helper';
+import resizeAndRenameImage from '@/helpers/file.helper';
 import HttpException from '@/utils/exceptions/http.exception';
 
 const AVATARS_DIR = path.resolve('./tmp');
