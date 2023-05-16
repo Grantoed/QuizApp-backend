@@ -6,7 +6,7 @@ import HttpException from '@/utils/exceptions/http.exception';
 import validationMiddleware from '@/middleware/validation.middleware';
 import authMiddleware from '@/middleware/authenticated.middleware';
 import validate from '@/resources/user/user.validation';
-import isUser from '@/helpers/isUser.helper';
+import isUser from '../../helpers/isUser.helper';
 import UserService from './user.service';
 
 class UserController implements Controller {
@@ -105,7 +105,6 @@ class UserController implements Controller {
 
     private refreshUser = (req: Request, res: Response, next: NextFunction): Response | void => {
         try {
-            console.log(req.user);
             res.status(200).json({ user: req.user });
         } catch (e: any) {
             next(e);
