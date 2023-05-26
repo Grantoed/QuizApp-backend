@@ -25,7 +25,7 @@ class UserController implements Controller {
             this.register,
         );
         this.router.post(`${this.path}/login`, validationMiddleware(validate.login), this.login);
-        this.router.post(`${this.path}/logout`, this.logout);
+        this.router.post(`${this.path}/logout`, authMiddleware, this.logout);
         this.router.get(`${this.path}`, authMiddleware, this.getUser);
         this.router.get(`${this.path}/refresh`, this.refreshUser);
         this.router.get(
@@ -85,11 +85,19 @@ class UserController implements Controller {
         next: NextFunction,
     ): Promise<Response | void> => {
         try {
-            if (req.user) {
-                const { _id: userId } = req.user;
+            // console.log('req.user', req.user);
+            const userGoogleId = (req.user as User).googleId;
+            if (userGoogleId) {
+                req.logout(e => {
+                    if (e) {
+                        return next(e);
+                    }
+                });
+            } else {
+                const userId = (req.user as User)._id;
                 await this.UserService.logout(userId);
-                res.status(200).send('Logged out successfully');
             }
+            res.status(200).send('Logged out successfully');
         } catch (e: any) {
             next(e);
         }
@@ -97,7 +105,7 @@ class UserController implements Controller {
 
     private getUser = (req: Request, res: Response, next: NextFunction): Response | void => {
         try {
-            res.status(200).json({ user: req.user });
+            res.status(200).json(req.user);
         } catch (e: any) {
             next(e);
         }
@@ -105,7 +113,7 @@ class UserController implements Controller {
 
     private refreshUser = (req: Request, res: Response, next: NextFunction): Response | void => {
         try {
-            res.status(200).json({ user: req.user });
+            res.status(200).json(req.user);
         } catch (e: any) {
             next(e);
         }

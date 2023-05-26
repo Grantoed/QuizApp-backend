@@ -7,9 +7,10 @@ declare global {
         export interface Request {
             user: User;
         }
-        interface User {
-            _id: Types.ObjectId;
-        }
+        // interface User {
+        //     _id: Types.ObjectId;
+        //     googleId: string;
+        // }
     }
 }
 

@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import fs from 'fs/promises';
 import { uploadFile } from '../../aws/s3';
 import FileService from './file.service';
+import User from '../user/user.interface';
 import Controller from '@/utils/interfaces/controller.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import uploadMiddleware from '@/middleware/file.middleware';
@@ -33,7 +34,7 @@ class FilesController implements Controller {
         try {
             if (req.user) {
                 const file = req.file;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 if (!file) {
                     return next(new HttpException(400, 'No file provided'));
                 }

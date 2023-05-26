@@ -17,7 +17,7 @@ class UserService {
         password: string,
         role: string,
     ): Promise<User | Error> {
-        const avatarURL = gravatar.url(email);
+        const avatarURL = gravatar.url('https:' + email);
         const existingUser = await this.user.findOne({ email });
         if (existingUser) {
             throw new HttpException(409, `User with email: ${email} already exists`);
@@ -64,6 +64,7 @@ class UserService {
         if (!user) {
             throw new HttpException(401, 'Unable to find user');
         }
+        return;
     }
 
     /**

@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import SolveService from '@/resources/solve/solve.service';
+import User from '../user/user.interface';
 import Controller from '@/utils/interfaces/controller.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import authMiddleware from '@/middleware/authenticated.middleware';
@@ -27,7 +28,7 @@ class SolveController implements Controller {
         try {
             if (req.user) {
                 const { id: setId } = req.params;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 const quizQuestions = await this.SolveService.startSet(setId, userId);
                 res.status(200).json({ quizQuestions });
             }
@@ -43,7 +44,7 @@ class SolveController implements Controller {
     ): Promise<Response | void> => {
         try {
             if (req.user) {
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 const { term, selectedOption } = req.body;
                 const isCorrectAnswer = await this.SolveService.checkCardAnswer(
                     term,
@@ -65,7 +66,7 @@ class SolveController implements Controller {
         try {
             if (req.user) {
                 const { id: setId } = req.params;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 const incorrectAnswers = await this.SolveService.submitSet(setId, userId);
                 res.status(200).json({ incorrectAnswers });
             }

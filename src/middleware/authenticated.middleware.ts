@@ -14,7 +14,7 @@ async function authMiddleware(
         const bearer = req.headers.authorization;
 
         if (req.session.passport?.user || !bearer) {
-            // console.log('req.user', req.user);
+            console.log('req.user', req.user);
             return next();
         } else {
             if (!bearer || !bearer.startsWith('Bearer ')) {

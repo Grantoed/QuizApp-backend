@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
+import User from '../user/user.interface';
 import Controller from '@/utils/interfaces/controller.interface';
 import HttpException from '@/utils/exceptions/http.exception';
 import authMiddleware from '@/middleware/authenticated.middleware';
@@ -55,7 +56,7 @@ class SetController implements Controller {
     ): Promise<Response | void> => {
         try {
             if (req.user) {
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 const page = parseInt(req.query.page as string) || 1;
                 const limit = parseInt(req.query.limit as string) || 10;
                 const sets = await this.SetService.getByUser(page, limit, userId);
@@ -90,7 +91,7 @@ class SetController implements Controller {
         try {
             if (req.user) {
                 const { title, description, cards } = req.body;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 const set = await this.SetService.create(title, description, cards, userId);
                 res.status(201).json({ set });
             }
@@ -108,7 +109,7 @@ class SetController implements Controller {
             if (req.user) {
                 const { id: setId } = req.params;
                 const { title, description } = req.body;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
 
                 await this.SetService.updateSet(setId, { title, description }, userId);
                 res.status(200).send('Set updated');
@@ -127,7 +128,7 @@ class SetController implements Controller {
             if (req.user) {
                 const { id: cardId } = req.params;
                 const { term, definition } = req.body;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
 
                 const updatedCard = await this.SetService.updateCard(
                     cardId,
@@ -149,7 +150,7 @@ class SetController implements Controller {
         try {
             if (req.user) {
                 const { id: setId } = req.params;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
                 await this.SetService.delete(setId, userId);
                 res.status(200).send(`Set with id: ${setId} deleted`);
             }
@@ -166,7 +167,7 @@ class SetController implements Controller {
         try {
             if (req.user) {
                 const { id: cardId } = req.params;
-                const { _id: userId } = req.user;
+                const { _id: userId } = req.user as User;
 
                 const deletedCard = await this.SetService.deleteCard(cardId, userId);
                 res.status(200).json(deletedCard);
